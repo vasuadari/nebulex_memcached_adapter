@@ -1,6 +1,7 @@
-# NebulexMemcachedAdapter
+# Nebulex adapter for Memcached
 
-**TODO: Add description**
+This adapter is implemented using [Memcachex](https://github.com/ananthakumaran/memcachex),
+a Memcached driver for Elixir.
 
 ## Installation
 
