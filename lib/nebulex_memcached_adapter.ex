@@ -86,7 +86,7 @@ defmodule NebulexMemcachedAdapter do
   @behaviour Nebulex.Adapter
 
   alias Nebulex.Object
-  alias NebulexMemcachedAdapter.Command
+  alias NebulexMemcachedAdapter.Client
 
   @default_pool_size System.schedulers_online()
 
@@ -190,7 +190,7 @@ defmodule NebulexMemcachedAdapter do
         {encode(key), encode(object)}
       end)
 
-    case Command.multi_set(cache, key_values, ttl: ttl) do
+    case Client.multi_set(cache, key_values, ttl: ttl) do
       {:ok, _} -> :ok
       _ -> :error
     end
@@ -198,8 +198,8 @@ defmodule NebulexMemcachedAdapter do
 
   @impl true
   def take(cache, key, _opts) do
-    with {:ok, value, cas} <- Command.get(cache, encoded_key = encode(key), cas: true) do
-      _ = Command.delete_cas(cache, encoded_key, cas)
+    with {:ok, value, cas} <- Client.get(cache, encoded_key = encode(key), cas: true) do
+      _ = Client.delete_cas(cache, encoded_key, cas)
 
       value
       |> decode()
@@ -210,21 +210,21 @@ defmodule NebulexMemcachedAdapter do
   end
 
   defp do_set(:set, cache, key, value, ttl) do
-    case Command.set(cache, key, value, ttl: ttl) do
+    case Client.set(cache, key, value, ttl: ttl) do
       {:ok} -> true
       _ -> false
     end
   end
 
   defp do_set(:add, cache, key, value, ttl) do
-    case Command.add(cache, key, value, ttl: ttl) do
+    case Client.add(cache, key, value, ttl: ttl) do
       {:ok} -> true
       _ -> false
     end
   end
 
   defp do_set(:replace, cache, key, value, ttl) do
-    case Command.replace(cache, key, value, ttl: ttl) do
+    case Client.replace(cache, key, value, ttl: ttl) do
       {:ok} -> true
       _ -> false
     end
@@ -236,7 +236,7 @@ defmodule NebulexMemcachedAdapter do
   end
 
   def expire(cache, key, ttl) do
-    with {:ok, value, cas} <- Command.get(cache, encode(key), cas: true),
+    with {:ok, value, cas} <- Client.get(cache, encode(key), cas: true),
          {:ok} <- set_cas(cache, key, decode(value), cas, ttl) do
       Object.expire_at(ttl) || :infinity
     else
@@ -250,7 +250,7 @@ defmodule NebulexMemcachedAdapter do
   end
 
   defp set_cas(cache, key, value, cas, ttl) do
-    Command.set_cas(
+    Client.set_cas(
       cache,
       encode(key),
       value,
@@ -261,7 +261,7 @@ defmodule NebulexMemcachedAdapter do
 
   @impl true
   def update_counter(cache, key, incrby, _opts) when is_integer(incrby) do
-    case Command.incr(cache, encode(key), incrby) do
+    case Client.incr(cache, encode(key), incrby) do
       {:ok, value} -> value
       _ -> nil
     end
@@ -269,7 +269,7 @@ defmodule NebulexMemcachedAdapter do
 
   @impl true
   def delete(cache, key, _opts) do
-    _ = Command.delete(cache, encode(key))
+    _ = Client.delete(cache, encode(key))
     :ok
   end
 
@@ -298,17 +298,17 @@ defmodule NebulexMemcachedAdapter do
 
   @impl true
   def size(cache) do
-    Command.size(cache)
+    Client.size(cache)
   end
 
   @impl true
   def flush(cache) do
-    _ = Command.flush(cache)
+    _ = Client.flush(cache)
     :ok
   end
 
   defp do_get(:object, cache, key) do
-    case Command.get(cache, encode(key)) do
+    case Client.get(cache, encode(key)) do
       {:ok, value} ->
         value
         |> decode()
@@ -320,7 +320,7 @@ defmodule NebulexMemcachedAdapter do
   end
 
   defp do_get(_, cache, key) do
-    case Command.get(cache, encode(key)) do
+    case Client.get(cache, encode(key)) do
       {:ok, value} ->
         value
         |> decode()

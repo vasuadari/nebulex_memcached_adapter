@@ -1,5 +1,5 @@
-defmodule NebulexMemcachedAdapter.Command do
-  # Memcachex command executor
+defmodule NebulexMemcachedAdapter.Client do
+  # Wrapper for Memcachex
   @moduledoc false
 
   def get(cache, key, opts \\ []) do
