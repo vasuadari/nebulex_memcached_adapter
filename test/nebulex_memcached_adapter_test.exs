@@ -15,4 +15,14 @@ defmodule NebulexMemcachedAdapterTest do
       Process.alive?(local) && TestCache.stop(local)
     end)
   end
+
+  test "fail on __before_compile__ because missing pool_size in config" do
+    assert_raise ArgumentError, ~r"missing :pools configuration", fn ->
+      defmodule WrongCache do
+        use Nebulex.Cache,
+          otp_app: :nebulex,
+          adapter: NebulexMemcachedAdapter
+      end
+    end
+  end
 end
