@@ -31,11 +31,11 @@ defmodule MyApp.MemcachedCache do
 end
 ```
 
-The rest of Memached configuration is set in our application environment, usually
+The rest of Memcached configuration is set in our application environment, usually
 defined in your `config/config.exs`:
 
 ```elixir
-config :my_app, MyApp.MemachedCache,
+config :my_app, MyApp.MemcachedCache,
   pools: [
     primary: [
       host: "127.0.0.1",
@@ -47,7 +47,7 @@ config :my_app, MyApp.MemachedCache,
 ```
 
 Since this adapter is implemented by means of `Memcachex`, it inherits the same
-options, including regular Memached options and connection options as well. For
+options, including regular Memcached options and connection options as well. For
 more information about the options, please check out `NebulexMemcachedAdapter`
 module and also [Memcachex](https://github.com/ananthakumaran/memcachex).
 
