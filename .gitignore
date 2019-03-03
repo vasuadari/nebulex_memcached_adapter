@@ -1,24 +1,19 @@
-# The directory Mix will write compiled artifacts to.
-/_build/
-
-# If you run "mix test --cover", coverage assets end up here.
-/cover/
-
-# The directory Mix downloads your dependencies sources to.
-/deps/
-
-# Where 3rd-party dependencies like ExDoc output generated docs.
-/doc/
-
-# Ignore .fetch files in case you like to edit your project deps locally.
+/_build
+/cover
+/deps
+/doc
+/docs
 /.fetch
-
-# If the VM crashes, it generates a dump, let's ignore it too.
+/benchmarks
+!/benchmarks/benchmark.exs
+/config/*.secret.exs
 erl_crash.dump
-
-# Also ignore archive artifacts (built via "mix archive.build").
 *.ez
-
-# Ignore package tarball (built via "mix hex.build").
-nebulex_memcached_adapter-*.tar
-
+*.beam
+*.o
+*.plt
+.DS_Store
+._*
+.elixir*
+.vs*
+mix.lock

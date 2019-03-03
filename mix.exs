@@ -55,6 +55,12 @@ defmodule NebulexMemcachedAdapter.MixProject do
       # the test folder. Hence, to run the tests it is necessary to fetch
       # nebulex dependency directly from Github.
       {:nebulex, nebulex_opts()},
+
+      # Test
+      {:benchee, "~> 0.13", optional: true, only: :dev},
+      {:benchee_html, "~> 0.5", optional: true, only: :dev},
+
+      # Docs
       {:ex_doc, "~> 0.19", only: :doc}
     ]
   end
