@@ -9,7 +9,8 @@ services:
 
   test:
     build: .
-    command: mix test
+    environment:
+      - NEBULEX_MEMCACHED_HOST=memcached
     network_mode: bridge
     links:
       - memcached
