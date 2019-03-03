@@ -1,14 +1,90 @@
 defmodule NebulexMemcachedAdapter do
   @moduledoc """
   Nebulex adapter for Memcached..
+
+  This adapter is implemented by means of `Memcachex`, a Memcached driver for
+  Elixir.
+
+  This adapter supports multiple connection pools against different memcached
+  nodes in a cluster. This feature enables resiliency, be able to survive in
+  case any node(s) gets unreachable.
+
+  ## Adapter Options
+
+  In addition to `Nebulex.Cache` shared options, this adapters supports the
+  following options:
+
+    * `:pools` - The list of connection pools for Memcached. Each element (pool)
+      holds the same options as `Memcachex` (including connection options), and
+      the `:pool_size` (number of connections to keep in the pool).
+
+  ## Memcachex Options (for each pool)
+
+  Since this adapter is implemented by means of `Memachex`, it inherits the same
+  options (including connection options). These are some of the main ones:
+
+    * `:hostname` - (string) hostname of the memcached server. Defaults to "localhost".
+
+    * `:port` - (integer) port on which the memcached server is listening.  Defaults to
+      11211.
+
+    * `:auth` - (tuple) only plain authentication method is supported.It is specified
+      using the following format {:plain, "username", "password"}. Defaults to nil.
+
+    * `ttl` - (integer) a default expiration time in seconds. This value will be used
+      if the :ttl value is not specified for a operation. Defaults to 0(means forever).
+
+    * `:namespace` - (string) prepend each key with the given value.
+
+    * `:backoff_initial` - (integer) initial backoff (in milliseconds) to be used in
+      case of connection failure. Defaults to 500.
+
+    * `:backoff_max` - (integer) maximum allowed interval between two connection attempt.
+      Defaults to 30_000.
+
+  For more information about the options (Memcache and connection options), please
+  checkout `Memcachex` docs.
+
+  In addition to `Memcachex` options, it supports:
+
+    * `:pool_size` - The number of connections to keep in the pool
+      (default: `System.schedulers_online()`).
+
+  ## Example
+
+  We can define our cache to use Memcached adapter as follows:
+
+      defmodule MyApp.MemachedCache do
+        use Nebulex.Cache,
+          otp_app: :nebulex,
+          adapter: NebulexMemcachedAdapter
+      end
+
+  The configuration for the cache must be in your application environment,
+  usually defined in your `config/config.exs`:
+
+      config :my_app, MyApp.MemachedCache,
+        pools: [
+          primary: [
+            hostname: "127.0.0.1",
+            port: 11211
+          ],
+          secondary: [
+            hostname: "127.0.0.1",
+            port: 11211,
+            pool_size: 2
+          ]
+        ]
+
+  For more information about the usage, check out `Nebulex.Cache` as well.
   """
+
 
   # Inherit default transaction implementation
   use Nebulex.Adapter.Transaction
 
   # Provide Cache Implementation
   @behaviour Nebulex.Adapter
-  @behaviour Nebulex.Adapter.Queryable
 
   alias Nebulex.Object
   alias NebulexMemcachedAdapter.Command
