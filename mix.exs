@@ -10,8 +10,21 @@ defmodule NebulexMemcachedAdapter.MixProject do
       app: @package_name,
       version: @version,
       elixir: "~> 1.6",
-      deps: deps()
-    ] ++ hex() ++ docs()
+      deps: deps(),
+      dialyzer: dialyzer()
+    ] ++ coverage() ++ hex() ++ docs()
+  end
+
+  defp coverage do
+    [
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.html": :test
+      ]
+    ]
   end
 
   defp hex do
@@ -57,8 +70,13 @@ defmodule NebulexMemcachedAdapter.MixProject do
       {:nebulex, nebulex_opts()},
 
       # Test
-      {:benchee, "~> 0.13", optional: true, only: :dev},
-      {:benchee_html, "~> 0.5", optional: true, only: :dev},
+      {:excoveralls, "~> 0.10.5", only: :test},
+      {:benchee, "~> 0.14", optional: true, only: :dev},
+      {:benchee_html, "~> 0.6", optional: true, only: :dev},
+
+      # Code Analysis
+      {:dialyxir, "~> 0.5", optional: true, only: [:dev, :test], runtime: false},
+      {:credo, "~> 0.10", optional: true, only: [:dev, :test]},
 
       # Docs
       {:ex_doc, "~> 0.19", only: :doc}
@@ -73,5 +91,19 @@ defmodule NebulexMemcachedAdapter.MixProject do
       _ ->
         "~> 1.0"
     end
+  end
+
+  defp dialyzer do
+    [
+      plt_add_apps: [:nebulex, :nebulex_memcached_adapter, :shards, :mix, :eex],
+      flags: [
+        :unmatched_returns,
+        :error_handling,
+        :race_conditions,
+        :no_opaque,
+        :unknown,
+        :no_return
+      ]
+    ]
   end
 end

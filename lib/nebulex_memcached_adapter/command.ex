@@ -1,5 +1,7 @@
 defmodule NebulexMemcachedAdapter.Command do
   # Memcachex command executor
+  @moduledoc false
+
   def get(cache, key, opts \\ []) do
     cache
     |> get_conn()

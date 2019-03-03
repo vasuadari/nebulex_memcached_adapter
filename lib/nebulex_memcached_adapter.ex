@@ -79,7 +79,6 @@ defmodule NebulexMemcachedAdapter do
   For more information about the usage, check out `Nebulex.Cache` as well.
   """
 
-
   # Inherit default transaction implementation
   use Nebulex.Adapter.Transaction
 
@@ -164,9 +163,12 @@ defmodule NebulexMemcachedAdapter do
 
   @impl true
   def get_many(cache, keys, _opts) do
-    Enum.map(keys, fn key ->
-      {key, get(cache, key, [])}
-    end)
+    key_values =
+      Enum.map(keys, fn key ->
+        {key, get(cache, key, [])}
+      end)
+
+    key_values
     |> Enum.reject(fn {_k, v} -> is_nil(v) end)
     |> Map.new()
   end
@@ -197,7 +199,7 @@ defmodule NebulexMemcachedAdapter do
   @impl true
   def take(cache, key, _opts) do
     with {:ok, value, cas} <- Command.get(cache, encoded_key = encode(key), cas: true) do
-      Command.delete_cas(cache, encoded_key, cas)
+      _ = Command.delete_cas(cache, encoded_key, cas)
 
       value
       |> decode()
@@ -243,8 +245,8 @@ defmodule NebulexMemcachedAdapter do
   end
 
   defp set_cas(cache, key, %Object{} = object, cas, ttl) do
-    value = object(object, key, ttl) |> encode()
-    set_cas(cache, key, value, cas, ttl)
+    value = object(object, key, ttl)
+    set_cas(cache, key, encode(value), cas, ttl)
   end
 
   defp set_cas(cache, key, value, cas, ttl) do
@@ -267,7 +269,7 @@ defmodule NebulexMemcachedAdapter do
 
   @impl true
   def delete(cache, key, _opts) do
-    Command.delete(cache, encode(key))
+    _ = Command.delete(cache, encode(key))
     :ok
   end
 
