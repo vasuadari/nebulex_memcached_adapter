@@ -53,8 +53,16 @@ module and also [Memcachex](https://github.com/ananthakumaran/memcachex).
 
 ## Testing
 
-First of all, ensure you have Memcached up and running on **localhost**
-and port **11211** (default host and port).
+### Docker
+
+```
+docker-compose run test
+```
+
+### Without Docker
+
+Ensure you have Memcached up and running on **localhost**(default host) and
+**11211**(default port).
 
 Since `NebulexMemcachedAdapter` uses the support modules and shared tests from
 Nebulex and by default its `test` folder is not included within the `hex`

@@ -2,6 +2,6 @@
 
 epmd -daemon
 
-MIX_ENV=test mix deps.get
+MIX_ENV=test mix deps.get --only test
 
-mix test
+mix coveralls
