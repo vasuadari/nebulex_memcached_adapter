@@ -6,6 +6,7 @@ Application.put_env(
   pools: [
     primary: [
       host: "127.0.0.1",
+      # credo:disable-for-next-line
       port: 11211
     ]
   ]
