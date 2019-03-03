@@ -79,7 +79,7 @@ defmodule NebulexMemcachedAdapter.MixProject do
       {:credo, "~> 0.10", optional: true, only: [:dev, :test]},
 
       # Docs
-      {:ex_doc, "~> 0.19", only: :doc}
+      {:ex_doc, "~> 0.19", only: :docs}
     ]
   end
 
