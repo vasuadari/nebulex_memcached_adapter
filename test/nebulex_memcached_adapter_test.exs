@@ -2,17 +2,17 @@ defmodule NebulexMemcachedAdapterTest do
   use ExUnit.Case, async: true
   use NebulexMemcachedAdapter.CacheTest, cache: NebulexMemcachedAdapter.TestCache
 
-  alias NebulexMemcachedAdapter.TestCache
+  alias NebulexMemcachedAdapter.TestCache, as: Cache
 
   setup do
-    {:ok, local} = TestCache.start_link()
-    TestCache.flush()
+    {:ok, local} = Cache.start_link()
+    Cache.flush()
 
     :ok
 
     on_exit(fn ->
       Process.sleep(100)
-      Process.alive?(local) && TestCache.stop(local)
+      Process.alive?(local) && Cache.stop(local)
     end)
   end
 
