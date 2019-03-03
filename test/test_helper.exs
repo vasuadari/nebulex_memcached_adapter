@@ -1,5 +1,6 @@
 # Load support files
-for dir <- ["support", "shared"], file <- File.ls!("test/" <> dir) do
+for dir <- ["support", "shared"],
+    file <- File.ls!("test/" <> dir) do
   Code.require_file(dir <> "/" <> file, __DIR__)
 end
 

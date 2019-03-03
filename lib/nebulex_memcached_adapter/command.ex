@@ -65,6 +65,7 @@ defmodule NebulexMemcachedAdapter.Command do
       cache
       |> get_conn()
       |> Memcache.stat()
+
     String.to_integer(size)
   end
 

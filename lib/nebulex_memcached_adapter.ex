@@ -34,8 +34,7 @@ defmodule NebulexMemcachedAdapter do
 
   defp pool_size(nil, module, otp_app) do
     raise ArgumentError,
-      "missing :pools configuration in " <>
-        "config #{inspect(otp_app)}, #{inspect(module)}"
+          "missing :pools configuration in " <> "config #{inspect(otp_app)}, #{inspect(module)}"
   end
 
   defp pool_size([], _module, _otp_app), do: 0
@@ -49,6 +48,7 @@ defmodule NebulexMemcachedAdapter do
   @impl true
   def init(opts) do
     cache = Keyword.fetch!(opts, :cache)
+
     children =
       opts
       |> Keyword.fetch!(:pools)
@@ -105,6 +105,7 @@ defmodule NebulexMemcachedAdapter do
   @impl true
   def set_many(cache, objects, opts) do
     ttl = opts |> Keyword.get(:ttl, 0)
+
     key_values =
       objects
       |> Enum.map(fn %Object{key: key} = object ->
@@ -121,6 +122,7 @@ defmodule NebulexMemcachedAdapter do
   def take(cache, key, _opts) do
     with {:ok, value, cas} <- Command.get(cache, encoded_key = encode(key), cas: true) do
       Command.delete_cas(cache, encoded_key, cas)
+
       value
       |> decode()
       |> object(key, -1)
@@ -157,7 +159,7 @@ defmodule NebulexMemcachedAdapter do
 
   def expire(cache, key, ttl) do
     with {:ok, value, cas} <- Command.get(cache, encode(key), cas: true),
-         {:ok} <- set_cas(cache, key, decode(value), cas, ttl)  do
+         {:ok} <- set_cas(cache, key, decode(value), cas, ttl) do
       Object.expire_at(ttl) || :infinity
     else
       _ -> nil
@@ -255,7 +257,7 @@ defmodule NebulexMemcachedAdapter do
     to_string(data)
   rescue
     _e ->
-    :erlang.term_to_binary(data)
+      :erlang.term_to_binary(data)
   end
 
   defp decode(nil), do: nil
@@ -270,6 +272,7 @@ defmodule NebulexMemcachedAdapter do
 
   defp object(nil, _key, _ttl), do: nil
   defp object(%Object{} = object, _key, -1), do: object
+
   defp object(%Object{} = object, _key, ttl) do
     %{object | expire_at: Object.expire_at(ttl)}
   end
