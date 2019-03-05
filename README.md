@@ -1,5 +1,8 @@
 # Nebulex adapter for Memcached
 
+[![Build Status](https://travis-ci.org/vasuadari/nebulex_memcached_adapter.svg?branch=master)](https://travis-ci.org/vasuadari/nebulex_memcached_adapter)
+[![Coverage Status](https://coveralls.io/repos/github/vasuadari/nebulex_memcached_adapter/badge.svg?branch=task%2Fsetup_ci)](https://coveralls.io/github/vasuadari/nebulex_memcached_adapter?branch=task%2Fsetup_ci)
+
 This adapter is implemented using [Memcachex](https://github.com/ananthakumaran/memcachex),
 a Memcached driver for Elixir.
 

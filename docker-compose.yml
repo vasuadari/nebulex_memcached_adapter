@@ -3,14 +3,14 @@ services:
   memcached:
     image: memcached:1.5-alpine
     ports:
-      - "11211:11211"
-      - "11211:11211/udp"
-    network_mode: bridge
+      - '11211:11211'
 
   test:
-    build: .
+    build:
+      context: .
+      args:
+        MIX_ENV: test
     environment:
       - NEBULEX_MEMCACHED_HOST=memcached
-    network_mode: bridge
-    links:
+    depends_on:
       - memcached
