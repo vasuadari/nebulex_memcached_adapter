@@ -13,3 +13,7 @@ config :nebulex_memcached_adapter, NebulexMemcachedAdapter.TestCache,
       pool_size: 2
     ]
   ]
+
+config :nebulex, Nebulex.TestCache.Dist,
+  local: Nebulex.TestCache.DistLocal,
+  version_generator: Nebulex.Version.Timestamp
