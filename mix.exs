@@ -86,7 +86,7 @@ defmodule NebulexMemcachedAdapter.MixProject do
   defp nebulex_opts do
     case Mix.env() do
       :test ->
-        [github: "cabol/nebulex", tag: "v1.0.0"]
+        [github: "cabol/nebulex"]
 
       _ ->
         "~> 1.0"

@@ -283,9 +283,15 @@ defmodule NebulexMemcachedAdapter do
 
   @impl true
   def object_info(cache, key, :ttl) do
-    case get(cache, key, []) do
-      nil -> nil
-      object -> Object.remaining_ttl(object.expire_at)
+    case Client.get(cache, encode(key)) do
+      {:ok, value} ->
+        %Object{expire_at: expire_at} =
+          value
+          |> decode()
+          |> object(key, -1)
+        Object.remaining_ttl(expire_at)
+
+      {:error, _} -> nil
     end
   end
 

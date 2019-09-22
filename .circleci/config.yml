@@ -1,0 +1,56 @@
+version: 2
+jobs:
+  build:
+    parallelism: 1
+    docker:
+      - image: circleci/elixir:1.6.6
+        environment:
+          MIX_ENV: test
+      - image: memcached:1.5-alpine
+
+    working_directory: ~/app
+
+    steps:
+      - checkout
+
+      - run: mix local.hex --force
+      - run: mix local.rebar --force
+
+      - restore_cache:  # restores saved mix cache
+          keys:  # list of cache keys, in decreasing specificity
+            - v1-mix-cache-{{ .Branch }}-{{ checksum "mix.lock" }}
+            - v1-mix-cache-{{ .Branch }}
+            - v1-mix-cache
+
+      - restore_cache:  # restores saved build cache
+          keys:
+            - v1-build-cache-{{ .Branch }}
+            - v1-build-cache
+      - run: mix do deps.get, compile
+      - save_cache:  # generate and store mix cache
+          key: v1-mix-cache-{{ .Branch }}-{{ checksum "mix.lock" }}
+          paths: "deps"
+      - save_cache:  # make another, less specific cache
+          key: v1-mix-cache-{{ .Branch }}
+          paths: "deps"
+      - save_cache:  # you should really save one more cache (just in case)
+          key: v1-mix-cache
+          paths: "deps"
+      - save_cache: # don't forget to save a *build* cache, too
+          key: v1-build-cache-{{ .Branch }}
+          paths: "_build"
+      - save_cache: # and one more build cache for good measure
+          key: v1-build-cache
+          paths: "_build"
+
+      - run:  # special utility that stalls main process until memcached is ready
+          name: Wait for memcached
+          command: dockerize -wait tcp://localhost:11211 -timeout 1m
+
+      - run: epmd -daemon
+
+      - run: mix test
+
+      - store_test_results:
+          path: _build/test/lib/nebulex_memcached_adapter
+

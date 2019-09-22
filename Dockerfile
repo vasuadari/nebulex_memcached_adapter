@@ -10,6 +10,10 @@ COPY . $APP_DIR
 
 WORKDIR $APP_DIR
 
+ARG MIX_ENV
+
+ENV MIX_ENV=${MIX_ENV}
+
 RUN mix deps.get
 
 COPY entrypoint.sh /bin/entrypoint.sh
